@@ -46,7 +46,8 @@ public:
                     const wp<AudioFlinger::EffectChain>& chain,
                     effect_descriptor_t *desc,
                     int id,
-                    int sessionId);
+                    int sessionId,
+                    bool pinned);
     virtual ~EffectModule();
 
     enum effect_state {
@@ -296,7 +297,7 @@ public:
                             ThreadBase *thread,
                             effect_descriptor_t *desc,
                             int id,
-                            audio_session_t sessionId,
+                            int sessionId,
                             bool pinned);
     status_t addEffect_l(const sp<EffectModule>& handle);
     status_t addEffect_ll(const sp<EffectModule>& handle);

@@ -2638,7 +2638,7 @@ void AudioFlinger::releaseAudioSessionId(int audioSession, pid_t pid)
     ALOGW_IF(caller != getpid_cached, "session id %d not found for pid %d", audioSession, caller);
 }
 
-bool AudioFlinger::isSessionAcquired_l(audio_session_t audioSession)
+bool AudioFlinger::isSessionAcquired_l(int audioSession)
 {
     size_t num = mAudioSessionRefs.size();
     for (size_t i = 0; i < num; i++) {

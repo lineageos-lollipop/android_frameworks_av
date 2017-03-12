@@ -79,7 +79,7 @@ AudioFlinger::EffectModule::EffectModule(ThreadBase *thread,
                                         const wp<AudioFlinger::EffectChain>& chain,
                                         effect_descriptor_t *desc,
                                         int id,
-                                        audio_session_t sessionId,
+                                        int sessionId,
                                         bool pinned)
     : mPinned(pinned),
       mThread(thread), mChain(chain), mId(id), mSessionId(sessionId),
@@ -1757,7 +1757,7 @@ status_t AudioFlinger::EffectChain::createEffect_l(sp<EffectModule>& effect,
                                                    ThreadBase *thread,
                                                    effect_descriptor_t *desc,
                                                    int id,
-                                                   audio_session_t sessionId,
+                                                   int sessionId,
                                                    bool pinned)
 {
     Mutex::Autolock _l(mLock);

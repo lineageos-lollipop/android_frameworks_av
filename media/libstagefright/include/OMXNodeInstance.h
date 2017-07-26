@@ -160,6 +160,8 @@ private:
     // metadata mode tracking
     bool mUsingMetadata[2];
 
+    bool mGraphicBufferEnabled[2];
+
     // For debug support
     char *mName;
     int DEBUG;

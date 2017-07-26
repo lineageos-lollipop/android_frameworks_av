@@ -206,6 +206,8 @@ OMXNodeInstance::OMXNodeInstance(
     mDebugLevelBumpPendingBuffers[1] = 0;
     mUsingMetadata[0] = false;
     mUsingMetadata[1] = false;
+    mGraphicBufferEnabled[0] = false;
+    mGraphicBufferEnabled[1] = false;
     mIsSecure = AString(name).endsWith(".secure");
 }
 
@@ -530,6 +532,12 @@ status_t OMXNodeInstance::enableGraphicBuffers(
     OMX_INDEXTYPE index;
     OMX_ERRORTYPE err = OMX_GetExtensionIndex(mHandle, name, &index);
 
+    if (err == OMX_ErrorNone) {
+        mGraphicBufferEnabled[portIndex] = enable;
+    } else if (enable) {
+        mGraphicBufferEnabled[portIndex] = false;
+    }
+
     if (err != OMX_ErrorNone) {
         CLOG_ERROR_IF(enable, getExtensionIndex, err, "%s", name);
         return StatusFromOMXError(err);
@@ -744,6 +752,12 @@ status_t OMXNodeInstance::useBuffer(
     // metadata buffers are not connected cross process
     BufferMeta *buffer_meta;
     bool isMeta = mUsingMetadata[portIndex];
+    if (!isMeta && mGraphicBufferEnabled[portIndex]) {
+        ALOGE("b/62948670");
+        android_errorWriteLog(0x534e4554, "62948670");
+        return INVALID_OPERATION;
+    }
+
     bool useBackup = crossProcess && isMeta; // use a backup buffer instead of the actual buffer
     OMX_U8 *data = static_cast<OMX_U8 *>(params->pointer());
     // allocate backup buffer
@@ -850,6 +864,13 @@ status_t OMXNodeInstance::useGraphicBuffer(
         OMX_U32 portIndex, const sp<GraphicBuffer>& graphicBuffer,
         OMX::buffer_id *buffer) {
     Mutex::Autolock autoLock(mLock);
+
+    if (!mGraphicBufferEnabled[portIndex]) {
+        // Report error if this is not in graphic buffer mode.
+        ALOGE("b/62948670");
+        android_errorWriteLog(0x534e4554, "62948670");
+        return INVALID_OPERATION;
+    }
 
     // See if the newer version of the extension is present.
     OMX_INDEXTYPE index;

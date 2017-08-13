@@ -369,11 +369,11 @@ void GraphicBufferSource::suspend(bool suspend) {
             } else if (err != OK) {
                 ALOGW("suspend: acquireBuffer returned err=%d", err);
                 break;
-            } else if (item.mSlot < 0 ||
-                    item.mSlot >= BufferQueue::NUM_BUFFER_SLOTS) {
+            } else if (item.mBuf < 0 ||
+                    item.mBuf >= BufferQueue::NUM_BUFFER_SLOTS) {
                 // Invalid buffer index
                 ALOGW("suspend: corrupted buffer index (%d)",
-                        item.mSlot);
+                        item.mBuf);
                 break;
             }
 
@@ -425,9 +425,9 @@ bool GraphicBufferSource::fillCodecBuffer_l() {
         // now what? fake end-of-stream?
         ALOGW("fillCodecBuffer_l: acquireBuffer returned err=%d", err);
         return false;
-    } else if (item.mSlot < 0 || item.mSlot >= BufferQueue::NUM_BUFFER_SLOTS) {
+    } else if (item.mBuf < 0 || item.mBuf >= BufferQueue::NUM_BUFFER_SLOTS) {
         // Invalid buffer index
-        ALOGW("fillCodecBuffer_l: corrupted buffer index (%d)", item.mSlot);
+        ALOGW("fillCodecBuffer_l: corrupted buffer index (%d)", item.mBuf);
         return false;
     }
 

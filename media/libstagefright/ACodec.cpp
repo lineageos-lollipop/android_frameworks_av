@@ -784,6 +784,13 @@ status_t ACodec::configureOutputBuffersFromNativeWindow(
         usage |= GRALLOC_USAGE_PROTECTED;
     }
 
+#ifdef MTK_HARDWARE
+    if (mFlags & kFlagIsSecure) {
+        usage |= GRALLOC_USAGE_SECURE;
+        ALOGW("Use GRALLOC_USAGE_SECURE");
+    }
+#endif
+
     // Make sure to check whether either Stagefright or the video decoder
     // requested protected buffers.
     if (usage & GRALLOC_USAGE_PROTECTED) {

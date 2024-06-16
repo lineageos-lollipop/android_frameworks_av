@@ -41,6 +41,11 @@ LOCAL_C_INCLUDES := \
     $(call include-path-for, audio-utils) \
     frameworks/av/services/soundtrigger
 
+ifeq ($(strip $(DOLBY_UDC)),true)
+LOCAL_C_INCLUDES += \
+    $(TOPDIR)vendor/dolby/include
+endif
+
 ifeq ($(strip $(AUDIO_FEATURE_ENABLED_LISTEN)),true)
   LOCAL_SHARED_LIBRARIES += liblisten
   LOCAL_C_INCLUDES += $(TARGET_OUT_HEADERS)/mm-audio/audio-listen

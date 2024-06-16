@@ -46,18 +46,6 @@ ifeq ($(strip $(AUDIO_FEATURE_ENABLED_RECORD_PLAY_CONCURRENCY)),true)
 common_cflags += -DRECORD_PLAY_CONCURRENCY
 endif
 
-ifeq ($(strip $(DOLBY_UDC)),true)
-common_cflags += -DDOLBY_UDC
-endif #DOLBY_UDC
-ifeq ($(strip $(DOLBY_DDP)),true)
-common_cflags += -DDOLBY_DDP
-endif #DOLBY_DDP
-ifeq ($(strip $(DOLBY_DAP)),true)
-    ifdef DOLBY_DAP_OPENSLES
-        common_cflags += -DDOLBY_DAP_OPENSLES
-    endif
-endif #DOLBY_END
-
 ifeq ($(strip $(AUDIO_FEATURE_ENABLED_HDMI_PASSTHROUGH)),true)
 common_cflags += -DHDMI_PASSTHROUGH_ENABLED
 endif
@@ -72,6 +60,17 @@ endif
 
 endif
 
+ifeq ($(strip $(DOLBY_UDC)),true)
+common_cflags += -DDOLBY_UDC
+endif #DOLBY_UDC
+ifeq ($(strip $(DOLBY_DDP)),true)
+common_cflags += -DDOLBY_DDP
+endif #DOLBY_DDP
+ifeq ($(strip $(DOLBY_DAP)),true)
+    ifdef DOLBY_DAP_OPENSLES
+        common_cflags += -DDOLBY_DAP_OPENSLES
+    endif
+endif #DOLBY_END
 
 include $(CLEAR_VARS)
 
@@ -95,6 +94,11 @@ LOCAL_C_INCLUDES := \
     $(TOPDIR)frameworks/av/services/audioflinger \
     $(call include-path-for, audio-effects) \
     $(call include-path-for, audio-utils)
+
+ifeq ($(strip $(DOLBY_UDC)),true)
+LOCAL_C_INCLUDES += \
+    $(TOPDIR)vendor/dolby/include
+endif
 
 LOCAL_SHARED_LIBRARIES := \
     libcutils \
@@ -132,6 +136,11 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES:= \
     AudioPolicyManager.cpp
 
+ifeq ($(strip $(DOLBY_UDC)),true)
+LOCAL_C_INCLUDES := \
+    $(TOPDIR)vendor/dolby/include
+endif
+
 LOCAL_SHARED_LIBRARIES := \
     libcutils \
     libutils \
@@ -157,6 +166,11 @@ include $(BUILD_SHARED_LIBRARY)
 ifneq ($(USE_CUSTOM_AUDIO_POLICY), 1)
 
 include $(CLEAR_VARS)
+
+ifeq ($(strip $(DOLBY_UDC)),true)
+LOCAL_C_INCLUDES := \
+    $(TOPDIR)vendor/dolby/include
+endif
 
 LOCAL_SRC_FILES:= \
     AudioPolicyFactory.cpp

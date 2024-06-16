@@ -64,6 +64,11 @@ LOCAL_C_INCLUDES := \
     $(call include-path-for, audio-effects) \
     $(call include-path-for, audio-utils)
 
+ifeq ($(strip $(DOLBY_UDC)),true)
+LOCAL_C_INCLUDES += \
+    $(TOPDIR)vendor/dolby/include
+endif
+
 LOCAL_SHARED_LIBRARIES := \
     libaudioresampler \
     libaudioutils \

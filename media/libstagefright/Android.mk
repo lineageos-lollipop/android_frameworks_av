@@ -100,6 +100,11 @@ LOCAL_C_INCLUDES:= \
         $(TOP)/external/icu/icu4c/source/common \
         $(TOP)/external/icu/icu4c/source/i18n \
 
+ifeq ($(strip $(DOLBY_UDC)),true)
+LOCAL_C_INCLUDES += \
+    $(TOPDIR)vendor/dolby/include
+endif
+
 LOCAL_SHARED_LIBRARIES := \
         libbinder \
         libcamera_client \

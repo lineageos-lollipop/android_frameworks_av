@@ -53,6 +53,10 @@
 #define LOG_TAG "AudioPolicyManager"
 //#define LOG_NDEBUG 0
 
+#ifdef MIXER_REQUIRES_MANUAL_AMP
+#include <tinyalsa/asoundlib.h>
+#endif
+
 //#define VERY_VERBOSE_LOGGING
 #ifdef VERY_VERBOSE_LOGGING
 #define ALOGVV ALOGV
@@ -6843,6 +6847,37 @@ float AudioPolicyManager::computeVolume(audio_stream_type_t stream,
     return volume;
 }
 
+#ifdef MIXER_REQUIRES_MANUAL_AMP
+int set_alsa_control_value(const char *name, int value) {
+    struct mixer *mixer;
+    struct mixer_ctl *ctl;
+    int ret = 0;
+
+    mixer = mixer_open(0);
+    if (!mixer) {
+        ALOGE("set_alsa_control_value() failed to open mixer!");
+        return -1;
+    }
+
+    ctl = mixer_get_ctl_by_name(mixer, name);
+    if (!ctl) {
+        ALOGE("set_alsa_control_value() failed to get ctl for %s", name);
+        ret = -1;
+        goto out;
+    }
+
+    if (mixer_ctl_set_value(ctl, 0, value)) {
+        ALOGE("set_alsa_control_value() failed to set value for %s", name);
+        ret = -1;
+        goto out;
+    }
+
+out:
+    mixer_close(mixer);
+    return ret;
+}
+#endif
+
 status_t AudioPolicyManager::checkAndSetVolume(audio_stream_type_t stream,
                                                    int index,
                                                    audio_io_handle_t output,
@@ -6879,8 +6914,13 @@ status_t AudioPolicyManager::checkAndSetVolume(audio_stream_type_t stream,
                 volume = 1.0f;
             }
         }
-
     }
+
+#ifdef MIXER_REQUIRES_MANUAL_AMP
+    set_alsa_control_value("Amp HPL Volume", volume > 0.0 ? 50 : 0);
+    set_alsa_control_value("Amp HPR Volume", volume > 0.0 ? 50 : 0);
+#endif
+
     // We actually change the volume if:
     // - the float value returned by computeVolume() changed
     // - the force flag is set

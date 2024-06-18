@@ -133,7 +133,7 @@ ifneq ($(USE_LEGACY_AUDIO_POLICY), 1)
 
 include $(CLEAR_VARS)
 
-LOCAL_SRC_FILES:= \
+LOCAL_SRC_FILES := \
     AudioPolicyManager.cpp
 
 ifeq ($(strip $(DOLBY_UDC)),true)
@@ -149,6 +149,16 @@ LOCAL_SHARED_LIBRARIES := \
 
 LOCAL_STATIC_LIBRARIES := \
     libmedia_helper
+
+ifeq ($(strip $(AUDIO_MIXER_REQUIRES_MANUAL_AMP)),true)
+common_cflags += -DMIXER_REQUIRES_MANUAL_AMP
+
+LOCAL_C_INCLUDES += \
+    external/tinyalsa/include
+
+LOCAL_SHARED_LIBRARIES += \
+   libtinyalsa
+endif
 
 ifeq ($(strip $(AUDIO_FEATURE_ENABLED_DTS_EAGLE)),true)
   LOCAL_CFLAGS += -DDTS_EAGLE
